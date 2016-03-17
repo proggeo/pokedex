@@ -2,54 +2,57 @@
  * Created by Proggeo on 3/16/2016.
  */
 
-var chunkSize = 0;
+var chunkSize = 0; //current amount of cards
 var activePokemon = null;
 var responseCards = null;
-var typeCount = 20;
+var typeCount = 20; //default value, refreshes with getTypes()
 var colors = ["C1BDDB", "FF99C9", "02C39A", "FFCDB2", "E8871E", "FFB4A2", "EDB458", "BAD4AA", "4FB477", "E5989B", "F0F3BD", "EDB458", "52FFEE", "B5838D", "B191FF", "DCFFFD", "EBF5DF", "DF99F0", "D4D4AA", "D664BE"];
 var typeColors = [];
-var filtered = null;
+var filtered = null; //saves current filtered type
 
 $(document).ready(function () {
     getTypes();
     window.onresize();
 });
 
-window.onresize = function (){
+window.onresize = function () {
     var width = window.innerWidth;
     var height = window.innerHeight;
-    if(height<650){
-        document.getElementById("rightContainer").style.position = "fixed";
-        document.getElementById("rightContainer").style.top = "100px";
-    }
-    else if (height<550){
+
+    if (height < 550) {
         document.getElementById("rightContainer").style.position = "static";
         document.getElementById("rightContainer").style.float = "left";
         document.getElementById("rightContainer").style.top = "100px";
-
     }
-    else{
+    else if (height < 650) {
         document.getElementById("rightContainer").style.position = "fixed";
-        document.getElementById("rightContainer").style.top = "" + (height-450)/2 +"px";
+        document.getElementById("rightContainer").style.top = "100px";
+    }
+    else {
+        document.getElementById("rightContainer").style.position = "fixed";
+        document.getElementById("rightContainer").style.top = "" + (height - 450) / 2 + "px";
     }
 
-    if (width<500) {
+    if (width < 650) {
+        if (document.getElementById("cardsContainer") != null)document.getElementById("cardsContainer").style.width = "100%";
         document.getElementById("rightContainer").style.position = "static";
         document.getElementById("rightContainer").style.clear = "both";
-        document.getElementById("rightContainer").style.float = "none";
+        document.getElementById("rightContainer").style.width = "100%";
+        document.getElementById("largeCard").style.margin = "auto";
+        document.getElementById("rightContainer").parentNode.insertBefore(document.getElementById("rightContainer"),document.getElementById("container"));
     }
-    else
-    {
+    else {
+        if (document.getElementById("cardsContainer") != null)document.getElementById("cardsContainer").style.width = "" + width - 370 + "px";
         document.getElementById("rightContainer").style.clear = "none";
-
         document.getElementById("rightContainer").style.float = "left";
+        document.getElementById("rightContainer").style.width = null ;
+        document.getElementById("rightContainer").parentNode.insertBefore(document.getElementById("container"),document.getElementById("rightContainer"));
 
     }
 };
 
 
-
-var load = function () {
+function load () {
     var xmlhttp = new XMLHttpRequest();
     chunkSize += 12;
     var url = "http://pokeapi.co/api/v1/pokemon/?limit=" + chunkSize;
@@ -58,11 +61,11 @@ var load = function () {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             responseCards = JSON.parse(xmlhttp.responseText);
             loadCards(responseCards);
+            window.onresize();
         }
     };
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
-
 };
 
 function loadCards(arr) {
@@ -88,7 +91,7 @@ function loadCards(arr) {
     document.getElementById("container").innerHTML = out;
 }
 
-var activate = function (element) {
+function activate (element) {
     if (activePokemon == null) {
         activePokemon = element;
         activePokemon.id = "activeCard";
@@ -109,7 +112,7 @@ var activate = function (element) {
     }
 };
 
-var getTypes = function () {
+function getTypes () {
     var xmlhttp = new XMLHttpRequest();
     var url = "http://pokeapi.co/api/v1/type/?limit=999";
     xmlhttp.onreadystatechange = function () {
@@ -156,7 +159,7 @@ function ColorLuminance(hex, lum) {
     return rgb;
 }
 
-var buildLargeCard = function (element) {
+function buildLargeCard (element) {
     element = element.getElementsByClassName("name")[0].textContent;
     for (var i = 0; i < responseCards.objects.length; i++) {
         if (responseCards.objects[i].name == element) {
@@ -169,7 +172,7 @@ var buildLargeCard = function (element) {
     buildTable(element);
 };
 
-var buildTable = function (element) {
+function buildTable (element) {
     var table = "";
     table += "<table>";
     table += "<tr><td>Type</td><td>";
@@ -187,14 +190,14 @@ var buildTable = function (element) {
     document.getElementById("table").innerHTML = table;
 };
 
-var filter = function (type) {
+function filter (type) {
     var cards = document.getElementsByClassName("card");
-    if (filtered!=null) {
+    if (filtered != null) {
         for (var i = 0; i < cards.length; i++) {
             cards[i].style.display = "block";
         }
-        if(filtered===type){
-            filtered=null;
+        if (filtered === type) {
+            filtered = null;
             return;
         }
     }
