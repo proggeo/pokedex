@@ -10,11 +10,12 @@ var colors = ["C1BDDB", "FF99C9", "02C39A", "FFCDB2", "E8871E", "FFB4A2", "EDB45
 var typeColors = [];
 var filtered = null; //saves current filtered type
 
-$(document).ready(function () {
+function ready() {
     getTypes();
     window.onresize();
-});
+};
 
+// adaptive styling
 window.onresize = function () {
     var width = window.innerWidth;
     var height = window.innerHeight;
@@ -51,7 +52,14 @@ window.onresize = function () {
     }
 };
 
+//number padding 4 -> 004
+function pad(num, size) {
+    var s = ""+num;
+    while (s.length < size) s = "0" + s;
+    return s;
+}
 
+//request for JSON with cards
 function load () {
     var xmlhttp = new XMLHttpRequest();
     chunkSize += 12;
@@ -68,6 +76,7 @@ function load () {
     xmlhttp.send();
 };
 
+//build HTML cards
 function loadCards(arr) {
     var out = "";
     var i;
@@ -91,6 +100,7 @@ function loadCards(arr) {
     document.getElementById("container").innerHTML = out;
 }
 
+//activate/deactivate selected card
 function activate (element) {
     if (activePokemon == null) {
         activePokemon = element;
@@ -112,6 +122,7 @@ function activate (element) {
     }
 };
 
+//request JSON with types list and assign colors to them
 function getTypes () {
     var xmlhttp = new XMLHttpRequest();
     var url = "http://pokeapi.co/api/v1/type/?limit=999";
@@ -139,7 +150,7 @@ function getTypes () {
 
 };
 
-//http://www.sitepoint.com/javascript-generate-lighter-darker-color/
+// get lighter version of color for gradient http://www.sitepoint.com/javascript-generate-lighter-darker-color/
 function ColorLuminance(hex, lum) {
     hex = String(hex).replace(/[^0-9a-f]/gi, '');
     // validate hex string
@@ -159,6 +170,7 @@ function ColorLuminance(hex, lum) {
     return rgb;
 }
 
+// style HTML large card
 function buildLargeCard (element) {
     element = element.getElementsByClassName("name")[0].textContent;
     for (var i = 0; i < responseCards.objects.length; i++) {
@@ -168,10 +180,11 @@ function buildLargeCard (element) {
         }
     }
     document.getElementById("largeView").style.backgroundImage = "url(\"http://pokeapi.co/media/img/" + element.national_id + ".png\")";
-    document.getElementById("largeCard").getElementsByTagName("p")[0].innerHTML = element.name;
+    document.getElementById("largeCard").getElementsByTagName("p")[0].innerHTML = element.name + " #" + pad(element.national_id,3);
     buildTable(element);
 };
 
+// build table for large card
 function buildTable (element) {
     var table = "";
     table += "<table>";
@@ -190,6 +203,7 @@ function buildTable (element) {
     document.getElementById("table").innerHTML = table;
 };
 
+// filter by type
 function filter (type) {
     var cards = document.getElementsByClassName("card");
     if (filtered != null) {
