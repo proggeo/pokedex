@@ -1,10 +1,6 @@
 /**
  * Created by Proggeo on 3/16/2016.
  */
-$(document).ready(function () {
-    getTypes();
-});
-
 
 var chunkSize = 0;
 var activePokemon = null;
@@ -13,6 +9,45 @@ var typeCount = 20;
 var colors = ["C1BDDB", "FF99C9", "02C39A", "FFCDB2", "E8871E", "FFB4A2", "EDB458", "BAD4AA", "4FB477", "E5989B", "F0F3BD", "EDB458", "52FFEE", "B5838D", "B191FF", "DCFFFD", "EBF5DF", "DF99F0", "D4D4AA", "D664BE"];
 var typeColors = [];
 var filtered = null;
+
+$(document).ready(function () {
+    getTypes();
+    window.onresize();
+});
+
+window.onresize = function (){
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    if(height<650){
+        document.getElementById("rightContainer").style.position = "fixed";
+        document.getElementById("rightContainer").style.top = "100px";
+    }
+    else if (height<550){
+        document.getElementById("rightContainer").style.position = "static";
+        document.getElementById("rightContainer").style.float = "left";
+        document.getElementById("rightContainer").style.top = "100px";
+
+    }
+    else{
+        document.getElementById("rightContainer").style.position = "fixed";
+        document.getElementById("rightContainer").style.top = "" + (height-450)/2 +"px";
+    }
+
+    if (width<500) {
+        document.getElementById("rightContainer").style.position = "static";
+        document.getElementById("rightContainer").style.clear = "both";
+        document.getElementById("rightContainer").style.float = "none";
+    }
+    else
+    {
+        document.getElementById("rightContainer").style.clear = "none";
+
+        document.getElementById("rightContainer").style.float = "left";
+
+    }
+};
+
+
 
 var load = function () {
     var xmlhttp = new XMLHttpRequest();
